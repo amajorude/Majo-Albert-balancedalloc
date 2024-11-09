@@ -1,9 +1,9 @@
-from functions import b_batched, plot
+from functions import b_batched, b_batched_plot
 
-T = 250 # number of repetitions of the experiment
-n_0 = 10 # number of balls
+T = 100 # number of repetitions of the experiment
+increment = 10 # number of balls
 n = 10
-m = 30 # number of bins
+m = 40 # number of bins
 
 Gs = []
 n_values = []
@@ -17,9 +17,9 @@ while n <= m**2:
         G += b_batched(n, m, b, board)
     Gs.append(G/T)
     n_values.append(n)  # Keep track of n values
-    n += n_0
+    n += increment
 
-plot(n_values, Gs, n_0, m, 'm-batched-choice')
+b_batched_plot(n_values, Gs, m, b, 'm-batched two-choice')
 
 Gs = []
 n_values = []
@@ -34,9 +34,9 @@ while n <= m**2:
         G += b_batched(n, m, b, board)
     Gs.append(G/T)
     n_values.append(n)  # Keep track of n values
-    n += n_0
+    n += increment
 
-plot(n_values, Gs, n_0, m, '5m-batched-choice')
+b_batched_plot(n_values, Gs, m, b, '5m-batched two-choice')
 
 Gs = []
 n_values = []
@@ -51,9 +51,9 @@ while n <= m**2:
         G += b_batched(n, m, b, board)
     Gs.append(G/T)
     n_values.append(n)  # Keep track of n values
-    n += n_0
+    n += increment
 
-plot(n_values, Gs, n_0, m, '10m-batched-choice')
+b_batched_plot(n_values, Gs, m, b, '10m-batched two-choice')
 
 Gs = []
 n_values = []
@@ -68,6 +68,6 @@ while n <= m**2:
         G += b_batched(n, m, b, board)
     Gs.append(G/T)
     n_values.append(n)  # Keep track of n values
-    n += n_0
+    n += increment
 
-plot(n_values, Gs, n_0, m, '20m-batched-choice')
+b_batched_plot(n_values, Gs, m, b, '20m-batched two-choice')
