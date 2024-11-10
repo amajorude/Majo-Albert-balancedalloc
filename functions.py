@@ -55,13 +55,13 @@ def b_batched_plot(n_values, Gs, m, b, method):
     # Add dashed lines for each n divisible by b
     for i, n in enumerate(n_values):
         if n % b == 0:  # Check if n is divisible by b
-            plt.axvline(x=n, color="gray", linestyle="--", linewidth=0.5)
+            plt.axvline(x=n, color="orange", linestyle="--", linewidth=0.5)
 
-    # Add labels, title, grid, and legend
+    # Add labels, title, and legend
     plt.xlabel("Number of Balls")
     plt.ylabel("Average Gap")
     plt.title(f"Average Gap in {method} strategy")
-    plt.grid(True)
+    plt.grid(False)
     plt.legend()
     plt.show()
  
