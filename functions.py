@@ -33,7 +33,6 @@ def plot(n_values, Gs, m, method):
 
 
 def b_batched_plot(n_values, Gs, m, b, method):
-    # Plot the main curve
     plt.plot(n_values, Gs, marker='o', label="Average Gap")
     
     # Highlight specific points with colors for n = m and n = m^2
@@ -68,7 +67,7 @@ def b_batched_plot(n_values, Gs, m, b, method):
  
 
 def get_bucket_two_choice(m, board):
-    x1, x2 = random.sample(range(m), 2)     # for each ball select  randomly two possible bins and choose the emptiest one
+    x1, x2 = random.sample(range(m), 2)     # for each ball select randomly two possible bins and choose the emptiest one
     if board[x1] > board[x2]:
         x = x2
     elif board[x2] > board[x1]: 
@@ -78,9 +77,9 @@ def get_bucket_two_choice(m, board):
     return x
 
 def get_bucket_one_plus_beta_choice(m, beta, board):
-    if random.random() < beta:
+    if random.random() < beta:                          # with probability beta apply the one_choice strategy
         x = random.randint(0, m-1)
-    else:
+    else:                                               # with probability (1-beta) apply the two_choice strategy
         x = get_bucket_two_choice(m, board)
     return x
 
@@ -89,12 +88,12 @@ def get_bucket_partial_information(m, board):
     x1, x2 = random.sample(range(m), 2)
     if board[x1] > median_board:
         if board[x2] > median_board:
-            x = random.choice([x1, x2])
-        else:
+            x = random.choice([x1, x2])                 # if both are over the median select at random
+        else:                                           # if only x1 is, pick x2
             x = x2
-    elif board[x2] > median_board:
+    elif board[x2] > median_board:                      # if only x2 is, pick x1
         x = x1
-    else:
+    else:                                               # if both are under or equal the median pick bucket at random
         x = random.choice([x1, x2])
     return x
 
@@ -104,7 +103,7 @@ def get_bucket_partial_information_2(m, board):
     value_1 = board[x1]
     value_2 = board[x2]
     if value_1 > median_board:
-        if value_2 > median_board:
+        if value_2 > median_board:                      # if both are over the median ask if they are in the top 75% most loaded
             if value_1 > np.percentile(board, 75):
                 if value_2 > np.percentile(board, 75):
                     x = random.choice([x1, x2])
@@ -118,7 +117,7 @@ def get_bucket_partial_information_2(m, board):
             x = x2
     elif value_2 > median_board:
         x = x1
-    elif value_1 > np.percentile(board, 25):
+    elif value_1 > np.percentile(board, 25):           # if both are under or equal the median ask if they are in the 25% least loaded
         if value_2 > np.percentile(board, 25):
             x = random.choice([x1,x2])
         else: 
@@ -139,35 +138,35 @@ def one_choice(n, m, board):
 
 def two_choice(n, m, board):               
     for i in range(n):
-        x = get_bucket_two_choice(m, board)
+        x = get_bucket_two_choice(m, board)     # select a bin using the two_choice strategy
         board[x] += 1
     return max(board) - n/m                     # return the gap
 
 def one_plus_beta_choice(beta, n, m, board):
     for i in range(n):
-        x = get_bucket_one_plus_beta_choice(m, beta, board)
+        x = get_bucket_one_plus_beta_choice(m, beta, board)     # select the bin using the one_plus_beta_strategy
         board[x] += 1
-    return max(board) - n/m
+    return max(board) - n/m                                     # return the gap
 
 def b_batched(n, m, b, board):
     for i in range(0, n, b):
         batch_size = min(b, n - i)
-        board_prime = [0 for _ in range(m)]
+        board_prime = [0 for _ in range(m)]         # board to save the position of the batch without altering the initial bins
         for k in range(batch_size):
-            x = get_bucket_two_choice(m, board)
+            x = get_bucket_two_choice(m, board)     # chose the bucket using two_choice without knowing the selection of the rest of the batch
             board_prime[x] += 1
         for y in range(m):
-            board[y] += board_prime[y]
-    return max(board) - n/m
+            board[y] += board_prime[y]              # update the load of the bins
+    return max(board) - n/m                         # return the gap
 
 def partial_information(n, m, board):
     for i in range(n):
-        x = get_bucket_partial_information(m, board)
+        x = get_bucket_partial_information(m, board)    # chose the bin with partial information
         board[x] += 1
     return max(board) - n/m
 
 def partial_information_2(n, m, board):
     for i in range(n):
-        x = get_bucket_partial_information_2(m, board)
+        x = get_bucket_partial_information_2(m, board)  # chose the bin with 2 questions of partial information 
         board[x] += 1
     return max(board) - n/m
