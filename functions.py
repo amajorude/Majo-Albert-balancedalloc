@@ -13,7 +13,7 @@ def plot(n_values, Gs, m, method):
             idx = n_values.index(n_val)
             plt.scatter(n_values[idx], Gs[idx], color=color, s=100, zorder=5)
             plt.axvline(x=n_val, color=color, linestyle="--")
-            label = f"n = m, G ≈ {Gs[idx]:.2f}" if n_val == m else f"n = m^2, G ≈ {Gs[idx]:.2f}"
+            label = f"n = m, G = {Gs[idx]:.2f}" if n_val == m else f"n = m^2, G = {Gs[idx]:.2f}"
             plt.scatter([], [], color=color, label=label)
 
     # Highlight the maximum G value in the plot
@@ -21,12 +21,12 @@ def plot(n_values, Gs, m, method):
     max_idx = Gs.index(max_G)
     plt.scatter(n_values[max_idx], max_G, color="blue", s=100, zorder=5)
     plt.axvline(x=n_values[max_idx], color="blue", linestyle="--")
-    plt.scatter([], [], color="blue", label=f"Max G ≈ {max_G:.2f} at n = {n_values[max_idx]}")
+    plt.scatter([], [], color="blue", label=f"Max G = {max_G:.2f} at n = {n_values[max_idx]}")
 
     # Add labels, title, grid, and legend
     plt.xlabel("Number of Balls")
     plt.ylabel("Average Gap")
-    plt.title(f"Average Gap in {method} Process")
+    plt.title(f"Average Gap in {method} strategy")
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -42,7 +42,7 @@ def b_batched_plot(n_values, Gs, m, b, method):
             idx = n_values.index(n_val)
             plt.scatter(n_values[idx], Gs[idx], color=color, s=100, zorder=5)
             plt.axvline(x=n_values[idx], color=color, linestyle="--")
-            label = f"n = m, G ≈ {Gs[idx]:.2f}" if n_val == m else f"n = m^2, G ≈ {Gs[idx]:.2f}"
+            label = f"n = m, G = {Gs[idx]:.2f}" if n_val == m else f"n = m^2, G = {Gs[idx]:.2f}"
             plt.scatter([], [], color=color, label=label)
 
     # Highlight the maximum G value in the plot
@@ -50,7 +50,7 @@ def b_batched_plot(n_values, Gs, m, b, method):
     max_idx = Gs.index(max_G)
     plt.scatter(n_values[max_idx], max_G, color="blue", s=100, zorder=5)
     plt.axvline(x=n_values[max_idx], color="blue", linestyle="--")
-    plt.scatter([], [], color="blue", label=f"Max G ≈ {max_G:.2f} at n = {n_values[max_idx]}")
+    plt.scatter([], [], color="blue", label=f"Max G = {max_G:.2f} at n = {n_values[max_idx]}")
 
     # Add dashed lines for each n divisible by b
     for i, n in enumerate(n_values):
@@ -60,19 +60,19 @@ def b_batched_plot(n_values, Gs, m, b, method):
     # Add labels, title, grid, and legend
     plt.xlabel("Number of Balls")
     plt.ylabel("Average Gap")
-    plt.title(f"Average Gap in {method} Process")
+    plt.title(f"Average Gap in {method} strategy")
     plt.grid(True)
     plt.legend()
     plt.show()
  
 
 def get_bucket_two_choice(m, board):
-    x1, x2 = random.sample(range(m), 2)     # for each ball select randomly two possible bins and choose the emptiest one
+    x1, x2 = random.choices(range(m), k = 2)     # for each ball select randomly two possible bins with replacement and choose the emptiest one
     if board[x1] > board[x2]:
         x = x2
     elif board[x2] > board[x1]: 
         x = x1
-    else:                                   # break ties at random                
+    else:                                       # break ties at random                
         x = random.choice([x1, x2])
     return x
 
@@ -85,7 +85,7 @@ def get_bucket_one_plus_beta_choice(m, beta, board):
 
 def get_bucket_partial_information(m, board):
     median_board = median(board)
-    x1, x2 = random.sample(range(m), 2)
+    x1, x2 = random.choices(range(m), k = 2)
     if board[x1] > median_board:
         if board[x2] > median_board:
             x = random.choice([x1, x2])                 # if both are over the median select at random
@@ -98,18 +98,20 @@ def get_bucket_partial_information(m, board):
     return x
 
 def get_bucket_partial_information_2(m, board):
-    median_board = median(board)
-    x1, x2 = random.sample(range(m), 2)
+    median_board = median(board)    
+    x1, x2 = random.choices(range(m), k=2)
     value_1 = board[x1]
     value_2 = board[x2]
+    
     if value_1 > median_board:
-        if value_2 > median_board:                      # if both are over the median ask if they are in the top 75% most loaded
-            if value_1 > np.percentile(board, 75):
-                if value_2 > np.percentile(board, 75):
+        if value_2 > median_board:
+            percentile_75 = np.percentile(board, 75)    # If both are above median, check if they are in the top 75%
+            if value_1 > percentile_75:
+                if value_2 > percentile_75:
                     x = random.choice([x1, x2])
                 else:
                     x = x2
-            elif value_2 > np.percentile(board, 75):
+            elif value_2 > percentile_75:
                 x = x1
             else:
                 x = random.choice([x1, x2])
@@ -117,15 +119,17 @@ def get_bucket_partial_information_2(m, board):
             x = x2
     elif value_2 > median_board:
         x = x1
-    elif value_1 > np.percentile(board, 25):           # if both are under or equal the median ask if they are in the 25% least loaded
-        if value_2 > np.percentile(board, 25):
-            x = random.choice([x1,x2])
-        else: 
-            x = x2
-    elif value_2 > np.percentile(board, 25):
-        x = x1
     else:
-        x = random.choice([x1,x2])
+        percentile_25 = np.percentile(board, 25)  
+        if value_1 > percentile_25:                     # If both are below or equal to median, check if they are in the bottom 25%
+            if value_2 > percentile_25:
+                x = random.choice([x1, x2])
+            else:
+                x = x2
+        elif value_2 > percentile_25:
+            x = x1
+        else:
+            x = random.choice([x1, x2])     
     return x
     
 
@@ -157,7 +161,7 @@ def b_batched(n, m, b, board):
             board_prime[x] += 1
         for y in range(m):
             board[y] += board_prime[y]              # update the load of the bins
-    return max(board) - n/m                         # return the gap
+    return max(board) - n/m                        # return the gap
 
 def partial_information(n, m, board):
     for i in range(n):

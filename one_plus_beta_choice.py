@@ -1,7 +1,7 @@
 from functions import one_plus_beta_choice, plot
 
 
-T = 100             # number of repetitions of the experiment 
+T = 250             # number of repetitions of the experiment 
 m = 40              # number of bins
 n = 10              # number of balls
 increment = 10      # increment the number of balls

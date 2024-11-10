@@ -1,7 +1,7 @@
 from functions import partial_information, partial_information_2, plot
 
 
-T = 100             # number of repetitions of the experiment 
+T = 250             # number of repetitions of the experiment 
 m = 40              # number of bins
 n = 10              # number of balls
 increment = 10      # increment the number of balls
