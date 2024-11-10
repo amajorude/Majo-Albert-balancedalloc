@@ -1,4 +1,4 @@
-# Majo-Albert-balancedalloc
+# Balanced Allocation. Assignment 2 Randomized Algorithms
 ## Overview
 
 This project consists of various Python scripts that simulate different balanced allocation strategies and analyze the resulting gap between the maximum load of a bin and the expected load. The goal is to compare and visualize the results of several allocation strategies, such as the "one-choice," "two-choice," and "partial information" methods, among others. The project is structured into different files, each focusing on a specific strategy and its corresponding analysis. The core functionality is implemented in the functions.py file, while other scripts conduct experiments and generate plots to visualize the results.
